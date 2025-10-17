@@ -1,0 +1,78 @@
+﻿@* @page "/" *@
+@* *@
+@* <PageTitle>Home</PageTitle> *@
+@* *@
+@* <h1>Hello, world!</h1> *@
+@* *@
+@* Welcome to your new app. *@
+@page "/"
+@using TravelDashboard_SOA_CA1.Models
+@using TravelDashboard_SOA_CA1.Service
+@inject CountryService CountryService
+
+<h3 class="mb-3">🌍 All Countries Information</h3>
+
+@if (countries == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <div class="country-grid">
+        @foreach (var country in countries)
+        {
+            <div class="country-card">
+                <img src="@country.Flag" alt="Flag" />
+                <h4>@country.Name</h4>
+                <p><b>Population:</b> @country.Population.ToString("N0")</p>
+                <p><b>Region:</b> @country.Region</p>
+                <p><b>Subregion:</b> @country.Subregion</p>
+                <p><strong>Capital:</strong> @country.Capital</p>
+                <p><strong>Languages: </strong>@country.Languages</p>
+            </div>
+        }
+    </div>
+}
+
+@code {
+    private List<Country>? countries;
+
+    protected override async Task OnInitializedAsync()
+    {
+        countries = await CountryService.GetAllCountriesAsync();
+    }
+}
+
+<style>
+    .country-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 1rem;
+    }
+
+    .country-card {
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        padding: 1rem;
+        text-align: center;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        background-color: #f9f9f9;
+    }
+
+    .country-card img {
+        width: 100px;
+        height: auto;
+        margin-bottom: 0.5rem;
+    }
+
+    .country-card h4 {
+        margin: 0.5rem 0;
+        color: #333;
+    }
+
+    .country-card p {
+        margin: 0.2rem 0;
+        color: #555;
+        font-size: 0.9rem;
+    }
+</style>
