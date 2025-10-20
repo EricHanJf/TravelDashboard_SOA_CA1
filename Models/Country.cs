@@ -2,6 +2,7 @@ namespace TravelDashboard_SOA_CA1.Models;
 
 public class Country
 {
+    // Properties for display
     public string Name { get; set; }
     public string Flag { get; set; }
     public long Population { get; set; }
@@ -10,7 +11,7 @@ public class Country
     public string Capital { get; set; }
     public string Languages { get; set; }
 
-    // 用于 JSON 映射
+    // Data structure that conforms to API JSON
     public class CountryApiModel
     {
         public NameInfo name { get; set; }
