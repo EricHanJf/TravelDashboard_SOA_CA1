@@ -1,0 +1,75 @@
+@page "/country/{CountryName}"
+@using TravelDashboard_SOA_CA1.Models
+@using TravelDashboard_SOA_CA1.Service
+@inject CountryService CountryService
+@inject NavigationManager NavigationManager
+
+<h3>@(country?.Name ?? "Loading...") Details</h3>
+
+<button @onclick="GoBack">« back to page</button>
+
+<hr/>
+
+@if (isLoading)
+{
+    <p>Loading country details...</p>
+}
+else if (country != null)
+{
+    <div class="detail-card">
+        <img src="@country.Flag" alt="Flag of @country.Name"/>
+        <h2>@country.Name</h2>
+//display country's information
+        <div class="info-grid">
+            <p>
+                <b>Population:</b> @country.Population.ToString("N0")
+            </p>
+            <p>
+                <b>Region:</b> @country.Region
+            </p>
+            <p>
+                <b>Subregion:</b> @country.Subregion
+            </p>
+            <p>
+                <b>Capital:</b> @country.Capital
+            </p>
+            <p>
+                <b>Languages:</b> @country.Languages
+            </p>
+        </div>
+    </div>
+}
+else
+{
+    <p>Sorry, we couldn't find detailed information for "@CountryName".</p>
+}
+
+
+@code {
+
+    // Matching routing parameters
+    [Parameter] public string CountryName { get; set; } = string.Empty;
+
+    private Country? country;
+    private bool isLoading = true;
+
+    // Triggered when parameters change
+    protected override async Task OnParametersSetAsync()
+    {
+        // Ensure URL-encoded names are decoded correctly
+        string decodedName = Uri.UnescapeDataString(CountryName);
+
+        isLoading = true;
+
+        // Calling the API with more data
+        country = await CountryService.GetCountryByNameAsync(decodedName);
+
+        isLoading = false;
+    }
+
+    private void GoBack()
+    {
+        NavigationManager.NavigateTo("/");
+    }
+
+}
