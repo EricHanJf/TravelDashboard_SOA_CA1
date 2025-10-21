@@ -58,3 +58,45 @@ h1:focus {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
     text-align: start;
 }
+/*css for Home.razor*/
+.country-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 2rem;
+}
+
+.country-card {
+    display: block;
+    text-decoration: none; 
+    color: inherit;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 1rem;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    /*background-color: #f9f9f9;*/
+    background-color: #EEEEEE;
+    transition: transform 0.2s; 
+}
+
+.country-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+.country-card img {
+    width: 80px;
+    height: auto;
+    /*margin-bottom: 0.5rem;*/
+}
+
+.country-card h4 {
+    margin: 0.5rem 0;
+    color: #333;
+}
+
+.country-card p {
+    margin: 0.2rem 0;
+    color: #555;
+    font-size: 0.9rem;
+}
