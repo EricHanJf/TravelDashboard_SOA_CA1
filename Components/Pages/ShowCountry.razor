@@ -19,24 +19,39 @@ else if (country != null)
     <div class="detail-card">
         <img src="@country.Flag" alt="Flag of @country.Name"/>
         <h2>@country.Name</h2>
-//display country's information
+@* //display country's information *@
         <div class="info-grid">
-            <p>
-                <b>Population:</b> @country.Population.ToString("N0")
-            </p>
-            <p>
-                <b>Region:</b> @country.Region
-            </p>
-            <p>
-                <b>Subregion:</b> @country.Subregion
-            </p>
-            <p>
-                <b>Capital:</b> @country.Capital
-            </p>
-            <p>
-                <b>Languages:</b> @country.Languages
-            </p>
+            <p><b>Population:</b> @country.Population.ToString("N0")</p>
+            <p><b>Region:</b> @country.Region</p>
+            <p><b>Subregion:</b> @country.Subregion</p>
+            <p><b>Capital:</b> @country.Capital</p>
+            <p><b>Languages:</b> @country.Languages</p>
         </div>
+        @if (!string.IsNullOrEmpty(country.GoogleMapURL))
+        {
+        <iframe
+            width="600"
+            height="450"
+            style="border:0;"
+            loading="lazy"
+            allowfullscreen
+            referrerpolicy="no-referrer-when-downgrade"
+            src="@country.GoogleMapURL">
+        </iframe>
+        }
+        else
+        {
+        <iframe
+            width="600"
+            height="450"
+            style="border:0;"
+            loading="lazy"
+            allowfullscreen
+            referrerpolicy="no-referrer-when-downgrade"
+            src="@($"https://www.google.com/maps?q={Uri.EscapeDataString(country.Capital ?? country.Name)}&output=embed")">
+        </iframe>
+        }
+
     </div>
 }
 else

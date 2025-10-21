@@ -46,7 +46,7 @@ namespace TravelDashboard_SOA_CA1.Service
         public async Task<Country?> GetCountryByNameAsync(string name)
         {
             // Get multiple data for a country
-            string url = $"https://restcountries.com/v3.1/name/{name}?fullText=true&fields=name,flags,population,region,subregion,capital,languages";
+            string url = $"https://restcountries.com/v3.1/name/{name}?fullText=true&fields=name,flags,population,region,subregion,capital,languages,maps";
 
             try
             {
@@ -65,7 +65,8 @@ namespace TravelDashboard_SOA_CA1.Service
                     Region = c.region,
                     Subregion = c.subregion,
                     Capital = c.capital != null && c.capital.Count > 0 ? c.capital[0] : "N/A",
-                    Languages = c.languages != null ? string.Join(", ", c.languages.Values) : "N/A"
+                    Languages = c.languages != null ? string.Join(", ", c.languages.Values) : "N/A",
+                    GoogleMapURL = ConvertToEmbedUrl(c.maps?.googleMaps,c.name.common)
                 };
             }
             catch (Exception ex)
@@ -75,5 +76,33 @@ namespace TravelDashboard_SOA_CA1.Service
                 return null;
             }
         }
+        private string? ConvertToEmbedUrl(string? googleMapsUrl,string? countryName = null)
+        {
+            if (string.IsNullOrEmpty(googleMapsUrl))
+                return null;
+            // Short link can't embed directly, Instead use a search-based embed URL using the country name.
+            if (googleMapsUrl.Contains("goo.gl/maps"))
+            {
+                if (!string.IsNullOrEmpty(countryName))
+                {
+                    // Use search query fallback
+                    return $"https://www.google.com/maps?q={Uri.EscapeDataString(countryName)}&output=embed";
+                }
+                return null;
+            }
+            // If it is a Google Maps URL, just replace it with embed
+            if (googleMapsUrl.Contains("google.com/maps"))
+            {
+                return googleMapsUrl.Replace("/maps/", "/maps/embed?");
+            }
+            //Unknown format — using the country name as fallback.
+            if (!string.IsNullOrEmpty(countryName))
+            {
+                return $"https://www.google.com/maps?q={Uri.EscapeDataString(countryName)}&output=embed";
+            }
+            
+            return null;
+        }
+
     }
 }

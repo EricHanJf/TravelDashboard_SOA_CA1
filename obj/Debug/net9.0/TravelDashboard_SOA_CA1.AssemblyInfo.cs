@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TravelDashboard_SOA_CA1")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c931e88854f0fde4c5650bddbf93ca188a600116")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a6c7e0d2aaabac7b4963e802c3201a440ba027fb")]
 [assembly: System.Reflection.AssemblyProductAttribute("TravelDashboard_SOA_CA1")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TravelDashboard_SOA_CA1")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
