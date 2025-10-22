@@ -11,6 +11,7 @@ public class Country
     public string Capital { get; set; }
     public string Languages { get; set; }
     public string? GoogleMapURL { get; set; }
+    public string CountryCode { get; set; }
 
     // Data structure that conforms to API JSON
     public class CountryApiModel
@@ -23,6 +24,7 @@ public class Country
         public List<string>? capital { get; set; }
         public Dictionary<string, string>? languages { get; set; }
         public MapsInfo maps { get; set; }
+        public string cca2 { get; set; }
 
         public class MapsInfo
         {
