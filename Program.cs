@@ -6,6 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 // builder.Services.AddScoped<CountryService>();
 builder.Services.AddHttpClient<CountryService>();
+builder.Services.AddHttpClient<WeatherService>();
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
