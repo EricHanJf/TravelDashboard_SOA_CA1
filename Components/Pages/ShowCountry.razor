@@ -2,89 +2,115 @@
 @using TravelDashboard_SOA_CA1.Models
 @using TravelDashboard_SOA_CA1.Service
 @inject CountryService CountryService
-@inject NavigationManager NavigationManager
+@inject WeatherService WeatherService
 
-<h3>@(country?.Name ?? "Loading...") Details</h3>
-
-<button @onclick="GoBack">« back to page</button>
-
-<hr/>
-
-@if (isLoading)
-{
-    <p>Loading country details...</p>
-}
-else if (country != null)
-{
-    <div class="detail-card">
-        <img src="@country.Flag" alt="Flag of @country.Name"/>
-        <h2>@country.Name</h2>
-@* //display country's information *@
-        <div class="info-grid">
-            <p><b>Population:</b> @country.Population.ToString("N0")</p>
-            <p><b>Region:</b> @country.Region</p>
-            <p><b>Subregion:</b> @country.Subregion</p>
-            <p><b>Capital:</b> @country.Capital</p>
-            <p><b>Languages:</b> @country.Languages</p>
+<div class="ShowCountry-page">
+    <div class="ShowCountry-header">
+        <h2>@(country?.Name ?? "Loading...")</h2>
+        <div class="RegionCountry-nav text-center mb-4">
+            <NavLink class="RegionCountry-home-btn btn" href="/">
+                Back to Home
+            </NavLink>
         </div>
-        @if (!string.IsNullOrEmpty(country.GoogleMapURL))
-        {
-        <iframe
-            width="600"
-            height="450"
-            style="border:0;"
-            loading="lazy"
-            allowfullscreen
-            referrerpolicy="no-referrer-when-downgrade"
-            src="@country.GoogleMapURL">
-        </iframe>
-        }
-        else
-        {
-        <iframe
-            width="600"
-            height="450"
-            style="border:0;"
-            loading="lazy"
-            allowfullscreen
-            referrerpolicy="no-referrer-when-downgrade"
-            src="@($"https://www.google.com/maps?q={Uri.EscapeDataString(country.Capital ?? country.Name)}&output=embed")">
-        </iframe>
-        }
-
     </div>
-}
-else
-{
-    <p>Sorry, we couldn't find detailed information for "@CountryName".</p>
-}
 
+    @if (isLoading)
+    {
+        <p>Loading country details...</p>
+    }
+    else if (country != null)
+    {
+        @if (forecastWeather?.Count > 0)
+        {
+            <div class="ShowCountry-forecast-section">
+                <h3>5-Day Weather Forecast</h3>
+                <div class="ShowCountry-forecast-grid">
+                    @foreach (var day in forecastWeather)
+                    {
+                        <div class="ShowCountry-forecast-item">
+                            <p><b>@day.Date?.ToString("ddd, MMM dd")</b></p>
+                            <img src="@($"https://openweathermap.org/img/wn/{day.Icon}@2x.png")" />
+                            <p>@day.Description</p>
+                            <p><b>@day.TempMin°C</b> - <b>@day.TempMax°C</b></p>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+
+        <div class="ShowCountry-content">
+            <div class="ShowCountry-map">
+                <iframe 
+                    src="@(!string.IsNullOrEmpty(country.GoogleMapURL) ? country.GoogleMapURL : $"https://www.google.com/maps?q={Uri.EscapeDataString(country.Capital ?? country.Name)}&output=embed")"
+                    loading="lazy">
+                </iframe>
+            </div>
+
+
+            <div class="ShowCountry-info">
+                <div class="ShowCountry-info-combined">
+                    <div class="ShowCountry-country-details">
+                        <img src="@country.Flag" alt="Flag of @country.Name" />
+                        <h3>@country.Name</h3>
+                        <p><b>Population:</b> @country.Population.ToString("N0")</p>
+                        <p><b>Region:</b> @country.Region</p>
+                        <p><b>Subregion:</b> @country.Subregion</p>
+                        <p><b>Capital:</b> @country.Capital</p>
+                        <p><b>Languages:</b> @country.Languages</p>
+                        <p><b>Country Code:</b> @country.CountryCode</p>
+                    </div>
+
+                    @if (weather != null)
+                    {
+                    <div class="ShowCountry-weather-summary">
+                        <h4>Current Weather</h4>
+                        <div class="ShowCountry-weather-info">
+                            <img src="@($"https://openweathermap.org/img/wn/{weather.Icon}@2x.png")" />
+                            <div>
+                                <p><b>@weather.CityName</b></p>
+                                <p>@weather.Description</p>
+                                <p>@weather.Temperature °C</p>
+                                <p>Humidity: @weather.Humidity%</p>
+                                <p>Wind: @weather.WindSpeed m/s</p>
+                            </div>
+                        </div>
+                    </div>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <p>Sorry, we couldn't find details for "@CountryName".</p>
+    }
+</div>
 
 @code {
-
-    // Matching routing parameters
     [Parameter] public string CountryName { get; set; } = string.Empty;
 
     private Country? country;
+    private Models.Weather? weather;
+    private List<Models.Weather> forecastWeather = new();
     private bool isLoading = true;
 
-    // Triggered when parameters change
     protected override async Task OnParametersSetAsync()
     {
-        // Ensure URL-encoded names are decoded correctly
         string decodedName = Uri.UnescapeDataString(CountryName);
-
         isLoading = true;
 
-        // Calling the API with more data
         country = await CountryService.GetCountryByNameAsync(decodedName);
+
+        if (country != null)
+        {
+            string city = !string.IsNullOrEmpty(country.Capital)
+                ? country.Capital
+                : country.Name;
+
+            weather = await WeatherService.GetWeatherAsync(country.Capital, country.CountryCode);
+            forecastWeather = await WeatherService.GetForecastWeatherAsync(city, country.CountryCode);
+        }
 
         isLoading = false;
     }
-
-    private void GoBack()
-    {
-        NavigationManager.NavigateTo("/");
-    }
-
 }

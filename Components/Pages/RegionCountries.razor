@@ -1,0 +1,60 @@
+@page "/region/{RegionName}"
+@using TravelDashboard_SOA_CA1.Models
+@using TravelDashboard_SOA_CA1.Service
+@inject CountryService CountryService
+
+<div class="RegionCountry-page Home-page">
+    <h2 class="RegionCountry-title Home-title">Countries in @RegionName</h2>
+
+    <div class="RegionCountry-nav text-center mb-4">
+        <NavLink class="RegionCountry-home-btn btn" href="/">
+            Back to Home
+        </NavLink>
+    </div>
+
+    @if (isLoading)
+    {
+        <p>Loading countries...</p>
+    }
+    else if (filteredCountries?.Any() == true)
+    {
+        <div class="Home-country-grid">
+            @foreach (var country in filteredCountries)
+            {
+                <a href="/country/@country.Name" class="Home-country-card">
+                    <img src="@country.Flag" alt="Flag of @country.Name"/>
+                    <h4>@country.Name</h4>
+                    <p>
+                        <b>Region:</b> @country.Region
+                    </p>
+                </a>
+            }
+        </div>
+    }
+    else
+    {
+        <p>No countries found in this region.</p>
+    }
+</div>
+
+@code {
+    [Parameter] public string RegionName { get; set; } = string.Empty;
+    private List<Country>? filteredCountries;
+    private bool isLoading = true;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        isLoading = true;
+
+        var allCountries = await CountryService.GetAllCountriesAsync();
+        if (allCountries != null)
+        {
+            filteredCountries = allCountries
+                .Where(c => c.Region.Equals(RegionName, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+        }
+
+        isLoading = false;
+    }
+
+}

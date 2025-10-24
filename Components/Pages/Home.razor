@@ -3,34 +3,57 @@
 @using TravelDashboard_SOA_CA1.Service
 @inject CountryService CountryService
 
-<h3 class="mb-3">All Countries Information</h3>
+<div class="Home-page">
+    <h3 class="Home-title">All Countries Information</h3>
 
-@if (countries == null)
-{
-    <p>Loading...</p>
-}
-else
-{
-    <div class="country-grid">
-        @foreach (var country in countries)
-        {
-            <a href="/country/@country.Name" class="country-card">
-                <img src="@country.Flag" alt="Flag"/>
-                <h4>@country.Name</h4>
-                @* <p><b>Region:</b> @country.Region</p> *@
-                @* <p><b>Capital:</b> @country.Capital</p> *@
-            </a>
-        }
-    </div>
-}
+    @if (countries == null)
+    {
+        <p>Loading...</p>
+    }
+    else
+    {
+        <div class="Home-region-list">
+            @foreach (var region in regions)
+            {
+                <NavLink class="btn" href="@($"/region/{region}")">
+                    @region
+                </NavLink>
+            }
+        </div>
+
+        <div class="Home-country-grid">
+            @foreach (var country in countries)
+            {
+                <a href="/country/@country.Name" class="Home-country-card">
+                    <img src="@country.Flag" alt="@country.Name Flag"/>
+                    <h4>@country.Name</h4>
+                    <p>
+                        <b>Region:</b> @country.Region
+                    </p>
+                </a>
+            }
+        </div>
+    }
+</div>
 
 @code {
     private List<Country>? countries;
+    private List<string> regions = new();
+    private bool isLoading = true;
 
     protected override async Task OnInitializedAsync()
     {
-// Call GetAllCountriesAsync to display all countries and flags
         countries = await CountryService.GetAllCountriesAsync();
-    }
+        if (countries != null)
+        {
+            regions = countries
+                .Select(c => c.Region)
+                .Where(r => !string.IsNullOrWhiteSpace(r))
+                .Distinct()
+                .OrderBy(r => r)
+                .ToList();
+        }
 
+        isLoading = false;
+    }
 }
