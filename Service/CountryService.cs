@@ -16,7 +16,7 @@ namespace TravelDashboard_SOA_CA1.Service
         {
             // Get only necessary fields to reduce the amount of data
             // string url = "https://restcountries.com/v3.1/all?fields=name,flags,population,region,subregion,capital,languages";
-            string url = "https://restcountries.com/v3.1/all?fields=name,flags";
+            string url = "https://restcountries.com/v3.1/all?fields=name,flags,region";
             var countries = new List<Country>();
             try
             {
@@ -29,7 +29,7 @@ namespace TravelDashboard_SOA_CA1.Service
                         Name = c.name.common,
                         Flag = c.flags.png,
                         // Population = c.population,
-                        // Region = c.region,
+                        Region = c.region,
                         // Subregion = c.subregion,
                         // Capital = c.capital != null && c.capital.Count > 0 ? c.capital[0] : "N/A",
                         // Languages = c.languages != null ? string.Join(", ", c.languages.Values) : "N/A"
@@ -46,7 +46,7 @@ namespace TravelDashboard_SOA_CA1.Service
         public async Task<Country?> GetCountryByNameAsync(string name)
         {
             // Get multiple data for a country
-            string url = $"https://restcountries.com/v3.1/name/{name}?fullText=true&fields=name,flags,population,region,subregion,capital,languages,maps";
+            string url = $"https://restcountries.com/v3.1/name/{name}?fullText=true&fields=name,flags,population,region,subregion,capital,languages,maps,cca2";
 
             try
             {
@@ -66,7 +66,8 @@ namespace TravelDashboard_SOA_CA1.Service
                     Subregion = c.subregion,
                     Capital = c.capital != null && c.capital.Count > 0 ? c.capital[0] : "N/A",
                     Languages = c.languages != null ? string.Join(", ", c.languages.Values) : "N/A",
-                    GoogleMapURL = ConvertToEmbedUrl(c.maps?.googleMaps,c.name.common)
+                    GoogleMapURL = ConvertToEmbedUrl(c.maps?.googleMaps,c.name.common),
+                    CountryCode = c.cca2
                 };
             }
             catch (Exception ex)
